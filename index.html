@@ -3,28 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JUSTI'S WOLT TRACKER</title>
+<title>Justi's WOLT TRACKER</title>
 <style>
 * { box-sizing: border-box; font-family: Arial, sans-serif; }
-body {
-  margin: 0;
-  background: #0f172a;
-  color: white;
-}
-.container {
-  max-width: 450px;
-  margin: auto;
-  padding: 20px;
-}
-h1 {
-  text-align: center;
-  color: #00d4ff;
-}
+body { margin: 0; background: #0f172a; color: white; }
+.container { max-width: 450px; margin: auto; padding: 20px; }
+h1 { text-align: center; color: #00d4ff; }
+
 .nav {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
 }
+
 .nav button {
   flex: 1;
   padding: 12px;
@@ -35,26 +26,31 @@ h1 {
   font-weight: bold;
   cursor: pointer;
 }
+
 .nav button.active {
   background: #00d4ff;
   color: black;
 }
+
 .card {
   background: #1e293b;
   padding: 20px;
   border-radius: 16px;
   margin-bottom: 20px;
 }
+
 .big {
-  font-size: 40px;
+  font-size: 34px;
   font-weight: bold;
   text-align: center;
   margin: 10px 0;
 }
+
 .small {
   color: #cbd5e1;
   font-size: 14px;
 }
+
 input {
   width: 100%;
   padding: 14px;
@@ -63,6 +59,7 @@ input {
   border: none;
   font-size: 16px;
 }
+
 button.main {
   width: 100%;
   padding: 14px;
@@ -74,10 +71,12 @@ button.main {
   font-weight: bold;
   cursor: pointer;
 }
+
 button.danger {
   background: #ef4444;
   color: white;
 }
+
 .progress {
   width: 100%;
   height: 20px;
@@ -86,18 +85,21 @@ button.danger {
   overflow: hidden;
   margin: 15px 0;
 }
+
 .progress-fill {
   height: 100%;
   width: 0%;
   background: #00d4ff;
   transition: 0.3s;
 }
+
 .history-item {
   background: #334155;
   padding: 14px;
   border-radius: 12px;
   margin-bottom: 10px;
 }
+
 .green { color: #22c55e; }
 .red { color: #ef4444; }
 .hidden { display: none; }
@@ -122,8 +124,11 @@ button.danger {
       <div class="small">Required Today</div>
       <div class="big">€<span id="requiredAmount">50.00</span></div>
 
-      <div class="small">Earned</div>
+      <div class="small">Earned Today</div>
       <div class="big">€<span id="earnedAmount">0.00</span></div>
+
+      <div class="small">TOTAL EARNED</div>
+      <div class="big">€<span id="totalEarned">0.00</span></div>
 
       <div class="progress">
         <div class="progress-fill" id="progressFill"></div>
@@ -147,7 +152,7 @@ button.danger {
   <div id="settingsPage" class="hidden">
     <div class="card">
       <h3>Daily Benchmark</h3>
-      <input type="number" id="targetInput" placeholder="Enter daily target (€)">
+      <input type="number" id="targetInput" placeholder="Enter target (€)">
       <button class="main" onclick="saveTarget()">Save</button>
     </div>
   </div>
@@ -225,8 +230,11 @@ function updateUI() {
   const required = calculateRequired(date);
   const diff = earned - required;
 
+  const total = Object.values(entries).reduce((sum, val) => sum + val, 0);
+
   document.getElementById("requiredAmount").innerText = required.toFixed(2);
   document.getElementById("earnedAmount").innerText = earned.toFixed(2);
+  document.getElementById("totalEarned").innerText = total.toFixed(2);
 
   let progress = required > 0 ? (earned / required) * 100 : 100;
   if (progress > 100) progress = 100;
@@ -284,17 +292,17 @@ function showPage(page) {
   document.getElementById("settingsBtn").classList.remove("active");
 
   if (page === "home") {
-    homePage.classList.remove("hidden");
+    document.getElementById("homePage").classList.remove("hidden");
     homeBtn.classList.add("active");
   }
 
   if (page === "history") {
-    historyPage.classList.remove("hidden");
+    document.getElementById("historyPage").classList.remove("hidden");
     historyBtn.classList.add("active");
   }
 
   if (page === "settings") {
-    settingsPage.classList.remove("hidden");
+    document.getElementById("settingsPage").classList.remove("hidden");
     settingsBtn.classList.add("active");
   }
 }
