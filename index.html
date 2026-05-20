@@ -5,10 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Justi's WOLT TRACKER</title>
 <style>
-* { box-sizing: border-box; font-family: Arial, sans-serif; }
-body { margin: 0; background: #0f172a; color: white; }
-.container { max-width: 450px; margin: auto; padding: 20px; }
-h1 { text-align: center; color: #00d4ff; }
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: white;
+  background:
+    linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.85)),
+    url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1400&q=80');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.container {
+  max-width: 450px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #00d4ff;
+  letter-spacing: 2px;
+}
 
 .nav {
   display: flex;
@@ -20,8 +44,9 @@ h1 { text-align: center; color: #00d4ff; }
   flex: 1;
   padding: 12px;
   border: none;
-  border-radius: 12px;
-  background: #1e293b;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
   color: white;
   font-weight: bold;
   cursor: pointer;
@@ -33,21 +58,23 @@ h1 { text-align: center; color: #00d4ff; }
 }
 
 .card {
-  background: #1e293b;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(18px);
+  border-radius: 20px;
   padding: 20px;
-  border-radius: 16px;
   margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,0.15);
 }
 
 .big {
-  font-size: 34px;
+  font-size: 32px;
   font-weight: bold;
   text-align: center;
-  margin: 10px 0;
+  margin: 8px 0 18px;
 }
 
 .small {
-  color: #cbd5e1;
+  color: #dbeafe;
   font-size: 14px;
 }
 
@@ -55,9 +82,15 @@ input {
   width: 100%;
   padding: 14px;
   margin-top: 10px;
-  border-radius: 12px;
   border: none;
+  border-radius: 14px;
   font-size: 16px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+input::placeholder {
+  color: #cbd5e1;
 }
 
 button.main {
@@ -65,11 +98,12 @@ button.main {
   padding: 14px;
   margin-top: 10px;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #00d4ff;
   color: black;
   font-weight: bold;
   cursor: pointer;
+  font-size: 16px;
 }
 
 button.danger {
@@ -80,8 +114,8 @@ button.danger {
 .progress {
   width: 100%;
   height: 20px;
-  background: #334155;
-  border-radius: 12px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 14px;
   overflow: hidden;
   margin: 15px 0;
 }
@@ -94,9 +128,9 @@ button.danger {
 }
 
 .history-item {
-  background: #334155;
+  background: rgba(255,255,255,0.12);
   padding: 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   margin-bottom: 10px;
 }
 
@@ -113,7 +147,6 @@ button.danger {
   <div class="nav">
     <button id="homeBtn" class="active" onclick="showPage('home')">Home</button>
     <button id="historyBtn" onclick="showPage('history')">History</button>
-    <button id="settingsBtn" onclick="showPage('settings')">Settings</button>
   </div>
 
   <div id="homePage">
@@ -136,7 +169,7 @@ button.danger {
 
       <div id="statusText" class="small"></div>
 
-      <input type="number" id="amountInput" placeholder="Enter earning amount (€)">
+      <input type="number" id="amountInput" placeholder="Enter earning (€)">
       <button class="main" onclick="addEarning()">+ Add Earning</button>
       <button class="main danger" onclick="resetDay()">Reset Day</button>
     </div>
@@ -148,28 +181,19 @@ button.danger {
       <div id="historyList"></div>
     </div>
   </div>
-
-  <div id="settingsPage" class="hidden">
-    <div class="card">
-      <h3>Daily Benchmark</h3>
-      <input type="number" id="targetInput" placeholder="Enter target (€)">
-      <button class="main" onclick="saveTarget()">Save</button>
-    </div>
-  </div>
 </div>
 
 <script>
-let dailyTarget = parseFloat(localStorage.getItem("dailyTarget")) || 50;
+const DAILY_TARGET = 50;
 let entries = JSON.parse(localStorage.getItem("entries")) || {};
 
-function getToday() {
+function today() {
   return new Date().toISOString().split("T")[0];
 }
 
-document.getElementById("selectedDate").value = getToday();
+document.getElementById("selectedDate").value = today();
 
 function saveData() {
-  localStorage.setItem("dailyTarget", dailyTarget);
   localStorage.setItem("entries", JSON.stringify(entries));
 }
 
@@ -178,15 +202,15 @@ function sortedDates() {
 }
 
 function calculateRequired(date) {
-  let balance = 0;
+  let carry = 0;
   const dates = sortedDates();
 
   for (let d of dates) {
     if (d >= date) break;
-    balance += dailyTarget - entries[d];
+    carry += DAILY_TARGET - entries[d];
   }
 
-  return Math.max(0, dailyTarget + balance);
+  return Math.max(0, DAILY_TARGET + carry);
 }
 
 function addEarning() {
@@ -214,16 +238,6 @@ function resetDay() {
   }
 }
 
-function saveTarget() {
-  const value = parseFloat(document.getElementById("targetInput").value);
-
-  if (!isNaN(value) && value > 0) {
-    dailyTarget = value;
-    saveData();
-    updateUI();
-  }
-}
-
 function updateUI() {
   const date = document.getElementById("selectedDate").value;
   const earned = entries[date] || 0;
@@ -238,14 +252,13 @@ function updateUI() {
 
   let progress = required > 0 ? (earned / required) * 100 : 100;
   if (progress > 100) progress = 100;
+
   document.getElementById("progressFill").style.width = progress + "%";
 
-  const status = document.getElementById("statusText");
-
   if (diff >= 0) {
-    status.innerHTML = `<span class="green">Surplus: €${diff.toFixed(2)}</span>`;
+    statusText.innerHTML = `<span class="green">Surplus: €${diff.toFixed(2)}</span>`;
   } else {
-    status.innerHTML = `<span class="red">Remaining: €${Math.abs(diff).toFixed(2)}</span>`;
+    statusText.innerHTML = `<span class="red">Remaining: €${Math.abs(diff).toFixed(2)}</span>`;
   }
 
   renderHistory();
@@ -283,27 +296,20 @@ function renderHistory() {
 }
 
 function showPage(page) {
-  document.getElementById("homePage").classList.add("hidden");
-  document.getElementById("historyPage").classList.add("hidden");
-  document.getElementById("settingsPage").classList.add("hidden");
+  homePage.classList.add("hidden");
+  historyPage.classList.add("hidden");
 
-  document.getElementById("homeBtn").classList.remove("active");
-  document.getElementById("historyBtn").classList.remove("active");
-  document.getElementById("settingsBtn").classList.remove("active");
+  homeBtn.classList.remove("active");
+  historyBtn.classList.remove("active");
 
   if (page === "home") {
-    document.getElementById("homePage").classList.remove("hidden");
+    homePage.classList.remove("hidden");
     homeBtn.classList.add("active");
   }
 
   if (page === "history") {
-    document.getElementById("historyPage").classList.remove("hidden");
+    historyPage.classList.remove("hidden");
     historyBtn.classList.add("active");
-  }
-
-  if (page === "settings") {
-    document.getElementById("settingsPage").classList.remove("hidden");
-    settingsBtn.classList.add("active");
   }
 }
 
