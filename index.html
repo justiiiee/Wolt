@@ -1,301 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WOLT TRACKER</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JUSTI'S WOLT TRACKER</title>
+<style>
+  * { box-sizing: border-box; font-family: Arial, sans-serif; }
+  body { margin: 0; background: #0f172a; color: white; }
+  .container { max-width: 450px; margin: auto; padding: 20px; }
+  h1 { text-align: center; color: #00d4ff; }
 
-    body {
-      background: #0f172a;
-      color: white;
-      min-height: 100vh;
-    }
+  .nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
 
-    .container {
-      max-width: 420px;
-      margin: auto;
-      padding: 20px;
-    }
+  .nav button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #1e293b;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+  }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #00d4ff;
-    }
+  .nav button.active {
+    background: #00d4ff;
+    color: black;
+  }
 
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      gap: 10px;
-    }
+  .card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+  }
 
-    .nav button {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      background: #1e293b;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
+  .earnings {
+    font-size: 42px;
+    font-weight: bold;
+    text-align: center;
+    margin: 15px 0;
+  }
 
-    .nav button.active {
-      background: #00d4ff;
-      color: black;
-    }
+  .small {
+    font-size: 14px;
+    color: #cbd5e1;
+    margin: 8px 0;
+  }
 
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 18px;
-      margin-bottom: 20px;
-    }
+  input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    margin-top: 10px;
+    font-size: 16px;
+  }
 
-    .earnings {
-      font-size: 42px;
-      font-weight: bold;
-      text-align: center;
-      margin: 15px 0;
-    }
+  button.main-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 12px;
+    background: #00d4ff;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
 
-    .progress-bar {
-      width: 100%;
-      height: 20px;
-      background: #334155;
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 15px 0;
-    }
+  button.danger {
+    background: #ef4444;
+    color: white;
+  }
 
-    .progress-fill {
-      height: 100%;
-      background: #00d4ff;
-      width: 0%;
-      transition: 0.3s;
-    }
+  .progress-bar {
+    width: 100%;
+    height: 20px;
+    background: #334155;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 15px 0;
+  }
 
-    button.main-btn {
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 14px;
-      background: #00d4ff;
-      color: black;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #00d4ff;
+    transition: 0.3s;
+  }
 
-    button.danger {
-      background: #ef4444;
-      color: white;
-    }
+  .history-item {
+    background: #334155;
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
 
-    input {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      margin-top: 10px;
-      font-size: 16px;
-    }
-
-    .history-item {
-      background: #334155;
-      padding: 14px;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .status-hit {
-      color: #22c55e;
-    }
-
-    .status-miss {
-      color: #ef4444;
-    }
-  </style>
+  .green { color: #22c55e; }
+  .red { color: #ef4444; }
+  .hidden { display: none; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>WOLT TRACKER</h1>
 
-    <div class="nav">
-      <button id="homeBtn" class="active" onclick="showPage('home')">Home</button>
-      <button id="historyBtn" onclick="showPage('history')">History</button>
-      <button id="settingsBtn" onclick="showPage('settings')">Settings</button>
-    </div>
+<div class="container">
+  <h1>WOLT TRACKER</h1>
 
-    <!-- Home -->
-    <div id="homePage">
-      <div class="card">
-        <h3>Today's Earnings</h3>
-        <div class="earnings">€<span id="todayTotal">0</span></div>
-        <div>Target: €<span id="targetDisplay">50</span></div>
+  <div class="nav">
+    <button id="homeBtn" class="active" onclick="showPage('home')">Home</button>
+    <button id="historyBtn" onclick="showPage('history')">History</button>
+    <button id="settingsBtn" onclick="showPage('settings')">Settings</button>
+  </div>
 
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
+  <!-- HOME -->
+  <div id="homePage">
+    <div class="card">
+      <div class="small">Select Date</div>
+      <input type="date" id="selectedDate" onchange="updateUI()">
 
-        <div>Remaining: €<span id="remaining">50</span></div>
+      <div class="small">Required Target</div>
+      <div class="earnings">€<span id="requiredTarget">50.00</span></div>
 
-        <button class="main-btn" onclick="addEarning()">+ Add Earning</button>
-        <button class="main-btn danger" onclick="resetDay()">Reset Day</button>
+      <div class="small">Earned</div>
+      <div class="earnings">€<span id="earnedTotal">0.00</span></div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
-    </div>
 
-    <!-- History -->
-    <div id="historyPage" class="hidden">
-      <div class="card">
-        <h3>Daily History</h3>
-        <div id="historyList"></div>
+      <div class="small">
+        Remaining / Balance:
+        <span id="balanceText">€50.00</span>
       </div>
-    </div>
 
-    <!-- Settings -->
-    <div id="settingsPage" class="hidden">
-      <div class="card">
-        <h3>Daily Target</h3>
-        <input type="number" id="targetInput" placeholder="Enter target (€)">
-        <button class="main-btn" onclick="saveTarget()">Save Target</button>
-      </div>
+      <input type="number" id="amountInput" placeholder="Enter earning amount (€)">
+      <button class="main-btn" onclick="addEarning()">+ Add Earning</button>
+      <button class="main-btn danger" onclick="resetDay()">Reset Day</button>
     </div>
   </div>
 
-  <script>
-    let target = parseFloat(localStorage.getItem("target")) || 50;
-    let todayTotal = parseFloat(localStorage.getItem("todayTotal")) || 0;
-    let history = JSON.parse(localStorage.getItem("history")) || [];
-    let lastDate = localStorage.getItem("lastDate") || new Date().toDateString();
+  <!-- HISTORY -->
+  <div id="historyPage" class="hidden">
+    <div class="card">
+      <h3>History</h3>
+      <div id="historyList"></div>
+    </div>
+  </div>
 
-    function checkNewDay() {
-      const today = new Date().toDateString();
+  <!-- SETTINGS -->
+  <div id="settingsPage" class="hidden">
+    <div class="card">
+      <h3>Base Daily Target</h3>
+      <input type="number" id="targetInput" placeholder="Enter target (€)">
+      <button class="main-btn" onclick="saveTarget()">Save Target</button>
+    </div>
+  </div>
+</div>
 
-      if (today !== lastDate) {
-        if (todayTotal > 0) {
-          history.unshift({
-            date: lastDate,
-            amount: todayTotal
-          });
-        }
+<script>
+  let baseTarget = parseFloat(localStorage.getItem("baseTarget")) || 50;
+  let entries = JSON.parse(localStorage.getItem("entries")) || {};
 
-        todayTotal = 0;
-        lastDate = today;
+  function getTodayDate() {
+    return new Date().toISOString().split("T")[0];
+  }
 
-        saveData();
-      }
+  document.getElementById("selectedDate").value = getTodayDate();
+
+  function saveData() {
+    localStorage.setItem("baseTarget", baseTarget);
+    localStorage.setItem("entries", JSON.stringify(entries));
+  }
+
+  function getSortedDates() {
+    return Object.keys(entries).sort();
+  }
+
+  function calculateTargetForDate(selectedDate) {
+    let carry = 0;
+    const sortedDates = getSortedDates();
+
+    for (let date of sortedDates) {
+      if (date >= selectedDate) break;
+
+      const target = baseTarget + carry;
+      const earned = entries[date];
+      carry = target - earned;
     }
 
-    function saveData() {
-      localStorage.setItem("target", target);
-      localStorage.setItem("todayTotal", todayTotal);
-      localStorage.setItem("history", JSON.stringify(history));
-      localStorage.setItem("lastDate", lastDate);
+    return Math.max(0, baseTarget + carry);
+  }
+
+  function addEarning() {
+    const date = document.getElementById("selectedDate").value;
+    const amount = parseFloat(document.getElementById("amountInput").value);
+
+    if (!date || isNaN(amount) || amount <= 0) {
+      alert("Enter valid date and amount.");
+      return;
+    }
+
+    if (!entries[date]) entries[date] = 0;
+    entries[date] += amount;
+
+    document.getElementById("amountInput").value = "";
+
+    saveData();
+    updateUI();
+  }
+
+  function resetDay() {
+    const date = document.getElementById("selectedDate").value;
+
+    if (confirm("Reset this day's earnings?")) {
+      delete entries[date];
+      saveData();
       updateUI();
     }
+  }
 
-    function updateUI() {
-      document.getElementById("todayTotal").innerText = todayTotal.toFixed(2);
-      document.getElementById("targetDisplay").innerText = target;
-      document.getElementById("remaining").innerText = Math.max(0, (target - todayTotal)).toFixed(2);
+  function saveTarget() {
+    const newTarget = parseFloat(document.getElementById("targetInput").value);
 
-      let progress = (todayTotal / target) * 100;
-      if (progress > 100) progress = 100;
+    if (!isNaN(newTarget) && newTarget > 0) {
+      baseTarget = newTarget;
+      saveData();
+      updateUI();
+      alert("Target updated.");
+    }
+  }
 
-      document.getElementById("progressFill").style.width = progress + "%";
+  function updateUI() {
+    const date = document.getElementById("selectedDate").value;
+    const earned = entries[date] || 0;
+    const target = calculateTargetForDate(date);
+    const balance = target - earned;
 
-      const historyList = document.getElementById("historyList");
-      historyList.innerHTML = "";
+    document.getElementById("requiredTarget").innerText = target.toFixed(2);
+    document.getElementById("earnedTotal").innerText = earned.toFixed(2);
 
-      if (history.length === 0) {
-        historyList.innerHTML = "<p>No history yet.</p>";
-      } else {
-        history.forEach(item => {
-          const hit = item.amount >= target;
-          historyList.innerHTML += `
-            <div class="history-item">
-              <span>${item.date}</span>
-              <span>
-                €${item.amount.toFixed(2)}
-                <span class="${hit ? 'status-hit' : 'status-miss'}">
-                  ${hit ? '✅' : '❌'}
-                </span>
-              </span>
-            </div>
-          `;
-        });
-      }
+    const balanceText = document.getElementById("balanceText");
+
+    if (balance > 0) {
+      balanceText.innerHTML = `<span class="red">€${balance.toFixed(2)} remaining</span>`;
+    } else {
+      balanceText.innerHTML = `<span class="green">€${Math.abs(balance).toFixed(2)} surplus</span>`;
     }
 
-    function addEarning() {
-      const amount = prompt("Enter earning amount (€):");
+    let progress = (earned / target) * 100;
+    if (progress > 100) progress = 100;
 
-      if (amount && !isNaN(amount)) {
-        todayTotal += parseFloat(amount);
-        saveData();
-      }
+    document.getElementById("progressFill").style.width = progress + "%";
+
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const historyList = document.getElementById("historyList");
+    historyList.innerHTML = "";
+
+    const sortedDates = getSortedDates().reverse();
+
+    if (sortedDates.length === 0) {
+      historyList.innerHTML = "<p>No history yet.</p>";
+      return;
     }
 
-    function resetDay() {
-      if (confirm("Reset today's earnings?")) {
-        todayTotal = 0;
-        saveData();
-      }
+    sortedDates.forEach(date => {
+      const target = calculateTargetForDate(date);
+      const earned = entries[date];
+      const diff = earned - target;
+
+      historyList.innerHTML += `
+        <div class="history-item">
+          <strong>${date}</strong><br>
+          Target: €${target.toFixed(2)}<br>
+          Earned: €${earned.toFixed(2)}<br>
+          ${
+            diff >= 0
+              ? `<span class="green">+€${diff.toFixed(2)} surplus</span>`
+              : `<span class="red">-€${Math.abs(diff).toFixed(2)} short</span>`
+          }
+        </div>
+      `;
+    });
+  }
+
+  function showPage(page) {
+    document.getElementById("homePage").classList.add("hidden");
+    document.getElementById("historyPage").classList.add("hidden");
+    document.getElementById("settingsPage").classList.add("hidden");
+
+    document.getElementById("homeBtn").classList.remove("active");
+    document.getElementById("historyBtn").classList.remove("active");
+    document.getElementById("settingsBtn").classList.remove("active");
+
+    if (page === "home") {
+      document.getElementById("homePage").classList.remove("hidden");
+      document.getElementById("homeBtn").classList.add("active");
     }
 
-    function saveTarget() {
-      const newTarget = parseFloat(document.getElementById("targetInput").value);
-
-      if (!isNaN(newTarget) && newTarget > 0) {
-        target = newTarget;
-        saveData();
-        alert("Target updated!");
-      }
+    if (page === "history") {
+      document.getElementById("historyPage").classList.remove("hidden");
+      document.getElementById("historyBtn").classList.add("active");
     }
 
-    function showPage(page) {
-      document.getElementById("homePage").classList.add("hidden");
-      document.getElementById("historyPage").classList.add("hidden");
-      document.getElementById("settingsPage").classList.add("hidden");
-
-      document.getElementById("homeBtn").classList.remove("active");
-      document.getElementById("historyBtn").classList.remove("active");
-      document.getElementById("settingsBtn").classList.remove("active");
-
-      if (page === "home") {
-        homePage.classList.remove("hidden");
-        homeBtn.classList.add("active");
-      }
-
-      if (page === "history") {
-        historyPage.classList.remove("hidden");
-        historyBtn.classList.add("active");
-      }
-
-      if (page === "settings") {
-        settingsPage.classList.remove("hidden");
-        settingsBtn.classList.add("active");
-      }
+    if (page === "settings") {
+      document.getElementById("settingsPage").classList.remove("hidden");
+      document.getElementById("settingsBtn").classList.add("active");
     }
+  }
 
-    checkNewDay();
-    updateUI();
-  </script>
+  updateUI();
+</script>
+
 </body>
 </html>
