@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WOLT TRACKER</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #0f172a;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00d4ff;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+
+    .nav button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: #1e293b;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .nav button.active {
+      background: #00d4ff;
+      color: black;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 18px;
+      margin-bottom: 20px;
+    }
+
+    .earnings {
+      font-size: 42px;
+      font-weight: bold;
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #334155;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #00d4ff;
+      width: 0%;
+      transition: 0.3s;
+    }
+
+    button.main-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      background: #00d4ff;
+      color: black;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button.danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    .history-item {
+      background: #334155;
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .status-hit {
+      color: #22c55e;
+    }
+
+    .status-miss {
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>WOLT TRACKER</h1>
+
+    <div class="nav">
+      <button id="homeBtn" class="active" onclick="showPage('home')">Home</button>
+      <button id="historyBtn" onclick="showPage('history')">History</button>
+      <button id="settingsBtn" onclick="showPage('settings')">Settings</button>
+    </div>
+
+    <!-- Home -->
+    <div id="homePage">
+      <div class="card">
+        <h3>Today's Earnings</h3>
+        <div class="earnings">€<span id="todayTotal">0</span></div>
+        <div>Target: €<span id="targetDisplay">50</span></div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div>Remaining: €<span id="remaining">50</span></div>
+
+        <button class="main-btn" onclick="addEarning()">+ Add Earning</button>
+        <button class="main-btn danger" onclick="resetDay()">Reset Day</button>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div id="historyPage" class="hidden">
+      <div class="card">
+        <h3>Daily History</h3>
+        <div id="historyList"></div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="settingsPage" class="hidden">
+      <div class="card">
+        <h3>Daily Target</h3>
+        <input type="number" id="targetInput" placeholder="Enter target (€)">
+        <button class="main-btn" onclick="saveTarget()">Save Target</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let target = parseFloat(localStorage.getItem("target")) || 50;
+    let todayTotal = parseFloat(localStorage.getItem("todayTotal")) || 0;
+    let history = JSON.parse(localStorage.getItem("history")) || [];
+    let lastDate = localStorage.getItem("lastDate") || new Date().toDateString();
+
+    function checkNewDay() {
+      const today = new Date().toDateString();
+
+      if (today !== lastDate) {
+        if (todayTotal > 0) {
+          history.unshift({
+            date: lastDate,
+            amount: todayTotal
+          });
+        }
+
+        todayTotal = 0;
+        lastDate = today;
+
+        saveData();
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem("target", target);
+      localStorage.setItem("todayTotal", todayTotal);
+      localStorage.setItem("history", JSON.stringify(history));
+      localStorage.setItem("lastDate", lastDate);
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById("todayTotal").innerText = todayTotal.toFixed(2);
+      document.getElementById("targetDisplay").innerText = target;
+      document.getElementById("remaining").innerText = Math.max(0, (target - todayTotal)).toFixed(2);
+
+      let progress = (todayTotal / target) * 100;
+      if (progress > 100) progress = 100;
+
+      document.getElementById("progressFill").style.width = progress + "%";
+
+      const historyList = document.getElementById("historyList");
+      historyList.innerHTML = "";
+
+      if (history.length === 0) {
+        historyList.innerHTML = "<p>No history yet.</p>";
+      } else {
+        history.forEach(item => {
+          const hit = item.amount >= target;
+          historyList.innerHTML += `
+            <div class="history-item">
+              <span>${item.date}</span>
+              <span>
+                €${item.amount.toFixed(2)}
+                <span class="${hit ? 'status-hit' : 'status-miss'}">
+                  ${hit ? '✅' : '❌'}
+                </span>
+              </span>
+            </div>
+          `;
+        });
+      }
+    }
+
+    function addEarning() {
+      const amount = prompt("Enter earning amount (€):");
+
+      if (amount && !isNaN(amount)) {
+        todayTotal += parseFloat(amount);
+        saveData();
+      }
+    }
+
+    function resetDay() {
+      if (confirm("Reset today's earnings?")) {
+        todayTotal = 0;
+        saveData();
+      }
+    }
+
+    function saveTarget() {
+      const newTarget = parseFloat(document.getElementById("targetInput").value);
+
+      if (!isNaN(newTarget) && newTarget > 0) {
+        target = newTarget;
+        saveData();
+        alert("Target updated!");
+      }
+    }
+
+    function showPage(page) {
+      document.getElementById("homePage").classList.add("hidden");
+      document.getElementById("historyPage").classList.add("hidden");
+      document.getElementById("settingsPage").classList.add("hidden");
+
+      document.getElementById("homeBtn").classList.remove("active");
+      document.getElementById("historyBtn").classList.remove("active");
+      document.getElementById("settingsBtn").classList.remove("active");
+
+      if (page === "home") {
+        homePage.classList.remove("hidden");
+        homeBtn.classList.add("active");
+      }
+
+      if (page === "history") {
+        historyPage.classList.remove("hidden");
+        historyBtn.classList.add("active");
+      }
+
+      if (page === "settings") {
+        settingsPage.classList.remove("hidden");
+        settingsBtn.classList.add("active");
+      }
+    }
+
+    checkNewDay();
+    updateUI();
+  </script>
+</body>
+</html>
