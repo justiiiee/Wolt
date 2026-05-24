@@ -1,319 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Justi's WOLT TRACKER</title>
-<style>
-* {
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Wolt Number Helper</title>
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  color: white;
-  background:
-    linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.85)),
-    url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1400&q=80');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-.container {
-  max-width: 450px;
-  margin: auto;
-  padding: 20px;
-}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #fff8dc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
 
-h1 {
-  text-align: center;
-  color: #00d4ff;
-  letter-spacing: 2px;
-}
+    .app {
+      width: 100%;
+      max-width: 450px;
+      background: #ffffff;
+      border: 4px solid #000;
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
 
-.nav {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
+    h1 {
+      text-align: center;
+      margin: 0 0 8px;
+      font-size: 34px;
+      color: #000;
+      font-weight: 900;
+    }
 
-.nav button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
+    .subtitle {
+      text-align: center;
+      font-size: 18px;
+      color: #222;
+      margin-bottom: 24px;
+      font-weight: bold;
+    }
 
-.nav button.active {
-  background: #00d4ff;
-  color: black;
-}
+    input {
+      width: 100%;
+      padding: 24px;
+      font-size: 48px;
+      font-weight: bold;
+      text-align: center;
+      border: 4px solid #000;
+      border-radius: 20px;
+      background: #ffff66;
+      color: #000;
+      outline: none;
+    }
 
-.card {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(18px);
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 20px;
-  border: 1px solid rgba(255,255,255,0.15);
-}
+    .hint {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #444;
+    }
 
-.big {
-  font-size: 32px;
-  font-weight: bold;
-  text-align: center;
-  margin: 8px 0 18px;
-}
+    .result {
+      margin-top: 24px;
+      background: #f5f5f5;
+      border: 3px solid #000;
+      border-radius: 20px;
+      padding: 20px;
+      display: none;
+    }
 
-.small {
-  color: #dbeafe;
-  font-size: 14px;
-}
+    .label {
+      font-size: 16px;
+      font-weight: 900;
+      color: #000;
+      margin-bottom: 8px;
+    }
 
-input {
-  width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 14px;
-  font-size: 16px;
-  background: rgba(255,255,255,0.15);
-  color: white;
-}
+    .slovenian {
+      font-size: 38px;
+      font-weight: 900;
+      color: #000;
+      line-height: 1.4;
+      margin-bottom: 20px;
+      word-break: break-word;
+    }
 
-input::placeholder {
-  color: #cbd5e1;
-}
+    .english {
+      font-size: 28px;
+      font-weight: bold;
+      color: #111;
+      line-height: 1.4;
+      word-break: break-word;
+    }
 
-button.main {
-  width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 14px;
-  background: #00d4ff;
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 16px;
-}
+    .error {
+      margin-top: 18px;
+      background: #ffdddd;
+      border: 3px solid #cc0000;
+      color: #cc0000;
+      padding: 14px;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      display: none;
+    }
 
-button.danger {
-  background: #ef4444;
-  color: white;
-}
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 30px;
+      }
 
-.progress {
-  width: 100%;
-  height: 20px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 14px;
-  overflow: hidden;
-  margin: 15px 0;
-}
+      input {
+        font-size: 42px;
+        padding: 20px;
+      }
 
-.progress-fill {
-  height: 100%;
-  width: 0%;
-  background: #00d4ff;
-  transition: 0.3s;
-}
+      .slovenian {
+        font-size: 32px;
+      }
 
-.history-item {
-  background: rgba(255,255,255,0.12);
-  padding: 14px;
-  border-radius: 14px;
-  margin-bottom: 10px;
-}
-
-.green { color: #22c55e; }
-.red { color: #ef4444; }
-.hidden { display: none; }
-</style>
+      .english {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>WOLT TRACKER</h1>
+<div class="app">
+  <h1>🚴 WOLT HELPER</h1>
+  <div class="subtitle">Type 3-digit order number</div>
 
-  <div class="nav">
-    <button id="homeBtn" class="active" onclick="showPage('home')">Home</button>
-    <button id="historyBtn" onclick="showPage('history')">History</button>
-  </div>
+  <input
+    type="tel"
+    id="numberInput"
+    maxlength="3"
+    placeholder="564"
+    inputmode="numeric"
+    oninput="convertNumber()"
+  >
 
-  <div id="homePage">
-    <div class="card">
-      <div class="small">Select Date</div>
-      <input type="date" id="selectedDate" onchange="updateUI()">
+  <div class="hint">Instant conversion while typing</div>
 
-      <div class="small">Required Today</div>
-      <div class="big">€<span id="requiredAmount">50.00</span></div>
+  <div id="error" class="error"></div>
 
-      <div class="small">Earned Today</div>
-      <div class="big">€<span id="earnedAmount">0.00</span></div>
+  <div id="result" class="result">
+    <div class="label">SLOVENIAN:</div>
+    <div id="slovenianText" class="slovenian"></div>
 
-      <div class="small">TOTAL EARNED</div>
-      <div class="big">€<span id="totalEarned">0.00</span></div>
-
-      <div class="progress">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-
-      <div id="statusText" class="small"></div>
-
-      <input type="number" id="amountInput" placeholder="Enter earning (€)">
-      <button class="main" onclick="addEarning()">+ Add Earning</button>
-      <button class="main danger" onclick="resetDay()">Reset Day</button>
-    </div>
-  </div>
-
-  <div id="historyPage" class="hidden">
-    <div class="card">
-      <h3>History</h3>
-      <div id="historyList"></div>
-    </div>
+    <div class="label">PRONUNCIATION:</div>
+    <div id="englishText" class="english"></div>
   </div>
 </div>
 
 <script>
-const DAILY_TARGET = 50;
-let entries = JSON.parse(localStorage.getItem("entries")) || {};
+  const numbers = {
+    "0": ["nič", "neech"],
+    "1": ["ena", "eh-na"],
+    "2": ["dva", "dva"],
+    "3": ["tri", "tree"],
+    "4": ["štiri", "shtee-ree"],
+    "5": ["pet", "pet"],
+    "6": ["šest", "shest"],
+    "7": ["sedem", "seh-dem"],
+    "8": ["osem", "oh-sem"],
+    "9": ["devet", "deh-vet"]
+  };
 
-function today() {
-  return new Date().toISOString().split("T")[0];
-}
+  function convertNumber() {
+    const input = document.getElementById("numberInput").value.replace(/\D/g, "");
+    const error = document.getElementById("error");
+    const result = document.getElementById("result");
 
-document.getElementById("selectedDate").value = today();
+    document.getElementById("numberInput").value = input;
 
-function saveData() {
-  localStorage.setItem("entries", JSON.stringify(entries));
-}
+    if (input.length === 0) {
+      error.style.display = "none";
+      result.style.display = "none";
+      return;
+    }
 
-function sortedDates() {
-  return Object.keys(entries).sort();
-}
+    if (input.length < 3) {
+      error.style.display = "block";
+      error.textContent = "Enter 3 digits";
+      result.style.display = "none";
+      return;
+    }
 
-function calculateRequired(date) {
-  let carry = 0;
-  const dates = sortedDates();
+    let slovenian = [];
+    let english = [];
 
-  for (let d of dates) {
-    if (d >= date) break;
-    carry += DAILY_TARGET - entries[d];
+    for (let digit of input) {
+      slovenian.push(numbers[digit][0]);
+      english.push(numbers[digit][1]);
+    }
+
+    document.getElementById("slovenianText").textContent = slovenian.join(" • ");
+    document.getElementById("englishText").textContent = english.join(" • ");
+
+    error.style.display = "none";
+    result.style.display = "block";
   }
-
-  return Math.max(0, DAILY_TARGET + carry);
-}
-
-function addEarning() {
-  const date = document.getElementById("selectedDate").value;
-  const amount = parseFloat(document.getElementById("amountInput").value);
-
-  if (!date || isNaN(amount) || amount <= 0) {
-    alert("Enter valid amount.");
-    return;
-  }
-
-  entries[date] = (entries[date] || 0) + amount;
-  document.getElementById("amountInput").value = "";
-  saveData();
-  updateUI();
-}
-
-function resetDay() {
-  const date = document.getElementById("selectedDate").value;
-
-  if (confirm("Reset this day?")) {
-    delete entries[date];
-    saveData();
-    updateUI();
-  }
-}
-
-function updateUI() {
-  const date = document.getElementById("selectedDate").value;
-  const earned = entries[date] || 0;
-  const required = calculateRequired(date);
-  const diff = earned - required;
-
-  const total = Object.values(entries).reduce((sum, val) => sum + val, 0);
-
-  document.getElementById("requiredAmount").innerText = required.toFixed(2);
-  document.getElementById("earnedAmount").innerText = earned.toFixed(2);
-  document.getElementById("totalEarned").innerText = total.toFixed(2);
-
-  let progress = required > 0 ? (earned / required) * 100 : 100;
-  if (progress > 100) progress = 100;
-
-  document.getElementById("progressFill").style.width = progress + "%";
-
-  if (diff >= 0) {
-    statusText.innerHTML = `<span class="green">Surplus: €${diff.toFixed(2)}</span>`;
-  } else {
-    statusText.innerHTML = `<span class="red">Remaining: €${Math.abs(diff).toFixed(2)}</span>`;
-  }
-
-  renderHistory();
-}
-
-function renderHistory() {
-  const list = document.getElementById("historyList");
-  list.innerHTML = "";
-
-  const dates = sortedDates().reverse();
-
-  if (!dates.length) {
-    list.innerHTML = "<p>No history yet.</p>";
-    return;
-  }
-
-  dates.forEach(date => {
-    const required = calculateRequired(date);
-    const earned = entries[date];
-    const diff = earned - required;
-
-    list.innerHTML += `
-      <div class="history-item">
-        <strong>${date}</strong><br>
-        Required: €${required.toFixed(2)}<br>
-        Earned: €${earned.toFixed(2)}<br>
-        ${
-          diff >= 0
-            ? `<span class="green">+€${diff.toFixed(2)}</span>`
-            : `<span class="red">-€${Math.abs(diff).toFixed(2)}</span>`
-        }
-      </div>
-    `;
-  });
-}
-
-function showPage(page) {
-  homePage.classList.add("hidden");
-  historyPage.classList.add("hidden");
-
-  homeBtn.classList.remove("active");
-  historyBtn.classList.remove("active");
-
-  if (page === "home") {
-    homePage.classList.remove("hidden");
-    homeBtn.classList.add("active");
-  }
-
-  if (page === "history") {
-    historyPage.classList.remove("hidden");
-    historyBtn.classList.add("active");
-  }
-}
-
-updateUI();
 </script>
 
 </body>
